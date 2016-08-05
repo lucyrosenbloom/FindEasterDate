@@ -1,0 +1,180 @@
+<html>
+	<head>
+		<title>Easter Calculator</title>
+	
+		<style>
+			#wrapper{
+  				width:500px;
+   				margin:0 auto;
+			}
+			
+			body {
+   				 background-color: #F7F396;
+   				 text-align: center;
+   				 font-family: verdana;
+			}
+			
+			h3 {
+   				color: #83DDD6;
+   				font-style: italic;
+   			}
+			
+			#title {
+   				border-style: dotted;
+   				border-width: 10px;
+   				border-color: #F2C9C9;
+   			}
+			
+			h1 {
+   				color: #ACA7C4;
+   			}
+   			
+   			p.intro {
+   				color: #ACA7C4;
+   			}
+   			
+   			form {
+   				border-style: dotted;
+   				text-align: left;
+   				border-color: #F2C9C9;
+   				border-width: 10px;
+   				text-align: center;
+   				color: #ACA7C4;
+   			}
+		</style>
+
+		<script type="text/javascript">
+		
+		//Program Name: Easter Calculator
+		//Purpose: Find date of Easter
+		//Author: Lucy Rosenbloom
+		//Date Last Modified: May 19 2016
+		
+		function displayInfo() {
+			var year = document.holidaySelection.UserYear.value;
+			var month;
+			var date;
+			var dayNumber; //0-6, 0=Sunday 6=Saturday
+			var dateB4Easter; 
+			
+			//calculate the date before Easter:
+			
+			dateB4Easter = dateBeforeEaster(year);
+			
+			var month = dateB4Easter.substring(0,1);
+			month = parseInt(month);
+			
+			var date = dateB4Easter.substring(2,4);
+			date = parseInt(date);
+			
+			//determine the day of the week for the dateB4Easter:
+			
+			dayNumber = dayOfTheWeek(month, date, year); 
+			
+			//counts from dateB4Easter to the following Sunday to get the date of Easter:
+			
+			if (dayNumber==0) dayNumber=7;
+			date = (date + (7-dayNumber)); //now date is the date of Easter
+			if (date > 31) {
+				date = -(31-date); 
+				month = 4;
+			}
+			
+			//display date of Easter:
+			
+			document.holidaySelection.fullInfo.value="Easter falls on Sunday " + month + "/" + date + "/" + year;
+			
+		} //END displayInfo function
+		
+		function dateBeforeEaster(year) {
+				// based on method devised by R. Sivaraman as cited at https://en.wikipedia.org/wiki/Computus#/Adaptation_for_Western_Easter_of_Meeus.27_Julian_algorithm
+				// last accessed 5/19/2016
+				
+				var a = year % 19;
+				var b = ((11 * a) + 5) % 30;
+				var c;
+				var easterMonth; //either March or April
+				var dateB4Easter; //date before Easter
+		
+				if (((b == 1) && (10 < a)) || (b == 0)){
+					c = b + 1;
+				}
+				else {
+					c = b;
+				}
+		
+				if ((c >= 1) && (c <= 18)) {
+					easterMonth = 4; //April
+				}
+				else {
+					easterMonth = 3; //March
+				}
+		
+				dateB4Easter = (50 - c) % 31;
+				
+				if (dateB4Easter == 0) { //accounts for a remainder of 0
+					dateB4Easter = 31;
+				}
+				
+				return (easterMonth + " " + dateB4Easter); 
+				
+		} //END dateBeforeEaster function
+
+		function dayOfTheWeek(month, date, year) {
+		
+			// based on Zeller's Rule as cited at http://mathforum.org/dr.math/faq/faq.calendar.html and http://mathforum.org/library/drmath/view/62324.html
+			// last accessed 5/19/2016
+		
+			var f, D, C, m, y, k;
+			y = year;
+			if( month==1 || month==2 ) { //accounts for leap year by making March the first month of the year (y) for this program
+				m = month + 10;
+				y--;
+			}
+			else {
+				m = month - 2;
+			}
+			
+			D = Math.floor(y % 100);
+			C = Math.floor(y / 100);
+			k = date;
+			
+			f = k + Math.floor((13*m-1)/5) + D + Math.floor(D/4) + Math.floor(C/4) - 2*C;
+			
+			if( f < 0 ) {
+				f = Math.floor(f % 7);
+				f = f + 7;
+			}
+			else 
+				f = Math.floor(f % 7);
+				
+			return f; //returns 0-6. 0=Sunday, 6=Saturday
+			
+		} //END dayOfTheWeek function
+
+		</script>
+	
+	</head>
+	
+	<body>
+		<div id="wrapper">
+			<h3>When is Easter?</h3>
+		
+			<div id="title">
+				<h1>Easter Calculator</h1>
+				<p class="intro"><b>Enter any year and find out what day Easter is!</b></p>
+			</div>
+		
+			<form name="holidaySelection" action="">
+		
+				<p><b> Enter 4 digit year:</b>
+				<input type="text" name="UserYear" value="" size="4">
+			
+				<input type="button" name="displayButton" value="Find Easter" onclick="displayInfo()" /> </p>
+				<textarea name="fullInfo" readonly="true" value="" rows="8" cols="50"/></textarea>
+
+			</form>
+			
+		</div> <!--END div id "wrapper" to center the page -->
+	</body>
+</html>
